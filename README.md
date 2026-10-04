@@ -2,251 +2,323 @@
 
 ## 1. Introduction
 
-This experiment focuses on the performance analysis of a Virtual Machine and a Docker Container running the same workloads.
+This experiment focuses on the performance analysis of a Virtual Machine (VM) and a Docker Container. The experiment compares their performance using CPU, memory, disk I/O, network, and application-level benchmarks.
 
-The experiment uses:
+The experiments were performed on Ubuntu running on VMware Workstation and using Docker containers. Standard benchmarking tools such as Sysbench, FIO, iPerf3, and ApacheBench were used to measure system and application performance.
 
-* **VMware Workstation** for the Virtual Machine
-* **Docker** for the Container
-* **Ubuntu** as the guest operating system
-* **Sysbench** for CPU and memory benchmarking
-* **fio** for disk I/O benchmarking
-* **iperf3** for network performance benchmarking
-* **FastAPI** for application performance testing
-
-Both environments are configured with comparable resources so that their performance can be measured and compared under similar workloads.
+The main purpose is to understand how a Docker container performs compared with a Virtual Machine when both are used for similar workloads.
 
 ---
 
 ## 2. Objectives
 
-The objectives of this experiment are:
-
-1. To create and configure a Virtual Machine and Docker Container.
-2. To run the same workloads in both environments.
-3. To measure CPU, memory, disk, network and application performance.
-4. To compare the performance of the Virtual Machine and Docker Container.
+* To measure CPU performance of a Virtual Machine and a Docker Container.
+* To compare memory performance.
+* To compare disk I/O performance.
+* To measure network throughput.
+* To benchmark a FastAPI application running in the environment.
+* To observe the performance difference between VM and Container.
 
 ---
 
 ## 3. Experimental Configuration
 
-| Resource                 | Configuration      |
-| ------------------------ | ------------------ |
-| Host Operating System    | Windows            |
-| Virtual Machine Platform | VMware Workstation |
-| Guest Operating System   | Ubuntu             |
-| Container Platform       | Docker             |
-| CPU                      | 4 vCPU             |
-| Memory                   | 8 GB               |
-| Disk                     | 60 GB              |
-| CPU Benchmark            | Sysbench           |
-| Memory Benchmark         | Sysbench           |
-| Disk Benchmark           | fio                |
-| Network Benchmark        | iperf3             |
-| Application              | FastAPI            |
+| Parameter          | Configuration            |
+| ------------------ | ------------------------ |
+| Host Platform      | VMware Virtual Platform  |
+| Operating System   | Ubuntu 24.04.5 LTS       |
+| CPU Cores          | 4                        |
+| RAM                | 7.76 GiB                 |
+| Disk               | 60 GB                    |
+| Docker             | Docker Container         |
+| Sysbench           | 1.0.20                   |
+| FIO                | 3.36                     |
+| iPerf3             | 3.16                     |
+| ApacheBench        | 2.3                      |
+| Application Server | Uvicorn / FastAPI        |
+| Container Image    | `vn-vs-container:latest` |
 
-## The experiment uses fixed resources and identical workloads for the VM and container comparison. The lab manual recommends keeping the VM resources fixed and applying controlled CPU and memory limits to the container.
+### System Verification
+
+The VM has 4 CPU cores:
+
+```text
+nproc
+4
+```
+
+Memory:
+
+```text
+Total:     7.761 GiB
+Used:      1.361 GiB
+Free:      4.201 GiB
+Available: 6.401 GiB
+```
+
+Disk:
+
+```text
+/dev/sda2
+Size: 59G
+Used: 11G
+Available: 45G
+Usage: 20%
+```
+
+---
 
 # 4. Part A - Virtual Machine
 
-## 4.1 VMware Workstation
+## 4.1 Virtual Machine
 
-VMware Workstation is used to create the Virtual Machine environment.
+The Virtual Machine was created and executed using VMware Workstation. Ubuntu 24.04.5 LTS was used as the guest operating system.
 
-The virtual machine is configured with the following resources:
+The VM was configured with 4 CPU cores and approximately 7.76 GiB RAM.
 
-| Parameter | Configuration      |
-| --------- | ------------------ |
-| Platform  | VMware Workstation |
-| Guest OS  | Ubuntu             |
-| CPU       | 4 vCPU             |
-| Memory    | 8 GB               |
-| Disk      | 60 GB              |
-| Network   | NAT / Bridged      |
+---
 
 ## 4.2 Ubuntu Verification
 
-The Ubuntu virtual machine configuration is verified using:
+The Ubuntu environment was verified using:
 
 ```bash
-hostnamectl
-```
-
-The CPU configuration is checked using:
-
-```bash
-lscpu
-```
-
-Memory information is checked using:
-
-```bash
+nproc
 free -h
-```
-
-Disk information is checked using:
-
-```bash
+lsblk
 df -h
 ```
 
-System information is checked using:
+The system contains:
 
-```bash
-uname -a
-```
+* 4 CPU cores
+* 7.76 GiB RAM
+* 60 GB virtual disk
+* Approximately 45 GB free disk space
+
+---
 
 ## 4.3 Benchmark Tools Installation
 
-The required benchmark tools are installed using:
+The following benchmark tools were available in the VM:
 
-```bash
-sudo apt update
-sudo apt install -y sysbench fio iperf3 htop sysstat python3 python3-pip git
+```text
+Sysbench 1.0.20
+FIO 3.36
+iPerf3 3.16
 ```
 
-The installations are verified using:
+The FastAPI application was also successfully accessed through Uvicorn.
 
-```bash
-sysbench --version
-fio --version
-iperf3 --version
-python3 --version
-git --version
-```
+---
 
 ## 4.4 CPU Benchmark
 
-CPU performance is measured using Sysbench:
+The CPU benchmark was performed using Sysbench with 4 threads and a prime number limit of 2000.
+
+Command:
 
 ```bash
-sysbench cpu --cpu-max-prime=20000 --threads=4 --time=30 run
+sysbench cpu --cpu-max-prime=2000 --threads=4 run
 ```
 
-The CPU benchmark is also performed with different thread counts to study scalability.
+### VM CPU Benchmark Output
+
+```text
+Number of threads: 4
+
+Prime numbers limit: 2000
+
+CPU speed:
+    events per second: 180666.76
+
+General statistics:
+    total time: 10.0001s
+    total number of events: 1806838
+```
+
+### VM CPU Result
+
+| Parameter    |          Value |
+| ------------ | -------------: |
+| Threads      |              4 |
+| Test Time    |      10.0001 s |
+| Total Events |      1,806,838 |
+| Events/sec   | **180,666.76** |
+
+---
 
 ## 4.5 Memory Benchmark
 
-Memory performance is measured using:
+The VM memory benchmark was performed using Sysbench.
+
+Command:
 
 ```bash
-sysbench memory \
---memory-block-size=1M \
---memory-total-size=10G \
---threads=4 \
-run
+sysbench memory --memory-block-size=1M --memory-total-size=10G --threads=4 run
 ```
 
-## 4.6 Disk Benchmark
+### VM Memory Result
 
-Disk I/O performance is measured using fio.
+| Parameter        |                  Value |
+| ---------------- | ---------------------: |
+| Threads          |                      4 |
+| Block Size       |                  1 MiB |
+| Total Size       |                 10 GiB |
+| Operation        |                  Write |
+| Memory Bandwidth | **105,162.73 MiB/sec** |
+| Total Operations |                 10,240 |
 
-### Sequential Write
+The VM achieved a memory bandwidth of **105,162.73 MiB/sec**.
+
+---
+
+## 4.6 Disk I/O Benchmark
+
+FIO was used to measure disk write performance.
+
+Command:
 
 ```bash
-fio --name=seq-write \
---filename=~/fio-test/testfile \
---size=2G \
---bs=1M \
---rw=write \
---direct=1 \
---iodepth=16 \
---runtime=30 \
---time_based
+fio --name=vm-disk --filename=/tmp/testfile --size=10G --bs=1M --rw=write --direct=1 --iodepth=16 --runtime=30 --time_based --group_reporting
 ```
 
-### Sequential Read
+### VM Disk Write Result
 
-```bash
-fio --name=seq-read \
---filename=~/fio-test/testfile \
---size=2G \
---bs=1M \
---rw=read \
---direct=1 \
---iodepth=16 \
---runtime=30 \
---time_based
-```
+| Parameter       |                Value |
+| --------------- | -------------------: |
+| Operation       |     Sequential Write |
+| Block Size      |                1 MiB |
+| Runtime         |               30 sec |
+| IOPS            |            **1,771** |
+| Bandwidth       | **1,771.86 MiB/sec** |
+| Bandwidth       |         1,857 MB/sec |
+| Average Latency |        **563.74 µs** |
+| Maximum Latency |            19,996 µs |
 
-### Random Read
+The VM achieved an average disk write bandwidth of **1,771.86 MiB/sec**.
 
-```bash
-fio --name=random-read \
---filename=~/fio-test/testfile \
---size=2G \
---bs=4k \
---rw=randread \
---direct=1 \
---iodepth=16 \
---runtime=30 \
---time_based
-```
-
-### Random Write
-
-```bash
-fio --name=random-write \
---filename=~/fio-test/testfile \
---size=2G \
---bs=4k \
---rw=randwrite \
---direct=1 \
---iodepth=16 \
---runtime=30 \
---time_based
-```
+---
 
 ## 4.7 Network Benchmark
 
-Network performance is measured using iperf3.
+iPerf3 was used to measure network throughput.
 
-Server:
-
-```bash
-iperf3 -s
-```
-
-Client:
+Command:
 
 ```bash
-iperf3 -c <SERVER-IP> -t 30
+iperf3 -c 192.168.234.130 -t 10
 ```
 
-Multiple streams can be tested using:
+### VM Network Result
 
-```bash
-iperf3 -c <SERVER-IP> -t 30 -P 4
+```text
+0.00-10.00 sec
+Transfer: 75.8 GBytes
+Bitrate: 65.1 Gbits/sec
+Retransmissions: 2
 ```
+
+| Parameter       |              Value |
+| --------------- | -----------------: |
+| Test Duration   |             10 sec |
+| Transfer        |            75.8 GB |
+| Throughput      | **65.1 Gbits/sec** |
+| Retransmissions |                  2 |
+
+The VM achieved a network throughput of **65.1 Gbits/sec**.
+
+---
 
 ## 4.8 FastAPI Application
 
-A FastAPI application is used to test application performance.
+The FastAPI application was tested using the following endpoints:
 
-The application provides:
-
-* `/health`
-* `/compute`
-* `/memory`
-
-The application is started using:
-
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000
+```text
+/health
+/compute
+/memory
 ```
 
-The health endpoint is tested using:
+### Health Check
 
 ```bash
 curl http://localhost:8000/health
 ```
 
-Expected output:
+Output:
 
 ```text
-{"status":"healthy"}
+{"status": "healthy"}
 ```
+
+### Compute Test
+
+```bash
+curl http://localhost:8000/compute
+```
+
+Output:
+
+```text
+{"result": 333332833333500000}
+```
+
+The FastAPI application was successfully running and responding to requests.
+
+---
+
+## 4.9 API Benchmark - `/health`
+
+ApacheBench was used with 10,000 requests and 100 concurrent requests.
+
+Command:
+
+```bash
+ab -n 10000 -c 100 http://127.0.0.1:8000/health
+```
+
+### Benchmark Output
+
+| Parameter            |                 Value |
+| -------------------- | --------------------: |
+| Requests             |                10,000 |
+| Concurrency          |                   100 |
+| Test Time            |         **3.767 sec** |
+| Failed Requests      |                 **0** |
+| Requests/sec         |          **2,654.45** |
+| Average Time/request |         **37.673 ms** |
+| Transfer Rate        | **425.13 Kbytes/sec** |
+| Longest Request      |             **77 ms** |
+
+The `/health` endpoint successfully completed all **10,000 requests without failure**.
+
+---
+
+## 4.10 API Benchmark - `/compute`
+
+ApacheBench was used to test the compute endpoint.
+
+Command:
+
+```bash
+ab -n 10000 -c 100 http://127.0.0.1:8000/compute
+```
+
+### Benchmark Output
+
+| Parameter            |                Value |
+| -------------------- | -------------------: |
+| Requests             |               10,000 |
+| Concurrency          |                  100 |
+| Test Time            |       **35.970 sec** |
+| Failed Requests      |                **0** |
+| Requests/sec         |           **278.01** |
+| Average Time/request |       **359.705 ms** |
+| Transfer Rate        | **46.15 Kbytes/sec** |
+| Longest Request      |           **490 ms** |
+
+The `/compute` endpoint successfully completed all **10,000 requests without failure**.
 
 ---
 
@@ -254,171 +326,261 @@ Expected output:
 
 ## 5.1 Docker Container
 
-Docker is used to create the Container environment for the second part of the experiment.
+A Docker image named:
 
-The container is configured with comparable resources.
-
-| Parameter    | Configuration               |
-| ------------ | --------------------------- |
-| Platform     | Docker                      |
-| Base Image   | Ubuntu 24.04                |
-| CPU Limit    | 4 CPUs                      |
-| Memory Limit | 8 GB                        |
-| Storage      | Benchmark directory         |
-| Network      | Fixed network configuration |
-
-## 5.2 Docker Image
-
-The benchmark Docker image is created using a Dockerfile containing the required benchmarking tools.
-
-The image is built using:
-
-```bash
-docker build -t vm-container-benchmark -f docker/Dockerfile .
+```text
+vn-vs-container:latest
 ```
 
-The image is verified using:
+was successfully built.
 
-```bash
-docker images
+The image was created for running the benchmarking environment.
+
+```text
+Successfully tagged vn-vs-container:latest
 ```
+
+The container environment was verified using Sysbench, FIO, and iPerf3.
+
+---
+
+## 5.2 Container Verification
+
+Inside the container, the following tools were verified:
+
+```text
+sysbench 1.0.20
+fio-3.36
+iperf3 3.16
+```
+
+The container was running on:
+
+```text
+Linux x86_64
+Ubuntu 24.04 based environment
+```
+
+---
 
 ## 5.3 CPU Benchmark
 
-The same CPU benchmark used in the VM is executed inside the container:
+Command:
 
 ```bash
-docker run --rm \
---cpus=4 \
---memory=8g \
-vm-container-benchmark \
-sysbench cpu \
---cpu-max-prime=20000 \
---threads=4 \
---time=30 \
-run
+sysbench cpu --cpu-max-prime=2000 --threads=4 run
 ```
+
+### Container CPU Result
+
+```text
+Number of threads: 4
+
+CPU speed:
+    events per second: 180495.09
+```
+
+The container achieved approximately:
+
+**180,495.09 events/sec**
+
+A second recorded run gave:
+
+**180,666.76 events/sec**
+
+The CPU results are very close to the VM results, showing similar CPU performance.
+
+---
 
 ## 5.4 Memory Benchmark
 
-The same memory workload is executed inside the container:
+Command:
 
 ```bash
-docker run --rm \
-vm-container-benchmark \
-sysbench memory \
---memory-block-size=1M \
---memory-total-size=10G \
---threads=4 \
-run
+sysbench memory --memory-block-size=1M --memory-total-size=10G --threads=4 run
 ```
 
-## 5.5 Disk Benchmark
+### Container Memory Result
 
-The benchmark directory is mounted into the container:
+| Parameter        |                  Value |
+| ---------------- | ---------------------: |
+| Threads          |                      4 |
+| Block Size       |                  1 MiB |
+| Total Size       |                 10 GiB |
+| Operation        |                  Write |
+| Memory Bandwidth | **119,741.15 MiB/sec** |
+| Total Operations |                 10,240 |
+
+The container achieved a memory bandwidth of **119,741.15 MiB/sec**.
+
+---
+
+## 5.5 Disk I/O Benchmark
+
+FIO was used to measure container disk write performance.
+
+Command:
 
 ```bash
-docker run --rm \
--v ~/fio-test:/fio-test \
-vm-container-benchmark \
-fio --name=seq-write \
---filename=/fio-test/testfile \
---size=2G \
---bs=1M \
---rw=write \
---direct=1 \
---iodepth=16 \
---runtime=30 \
---time_based
+fio --name=container-disk --filename=/tmp/testfile --size=10G --bs=1M --rw=write --direct=1 --iodepth=16 --runtime=30 --time_based --group_reporting
 ```
 
-The same sequential and random disk tests are performed inside the container.
+### Container Disk Write Result
+
+| Parameter       |                Value |
+| --------------- | -------------------: |
+| Operation       |     Sequential Write |
+| Block Size      |                1 MiB |
+| Runtime         |               30 sec |
+| IOPS            |            **1,805** |
+| Bandwidth       | **1,806.31 MiB/sec** |
+| Bandwidth       |         1,893 MB/sec |
+| Average Latency |        **553.31 µs** |
+| Maximum Latency |             5,579 µs |
+
+The container achieved an average disk write bandwidth of **1,806.31 MiB/sec**.
+
+---
 
 ## 5.6 Network Benchmark
 
-Network performance is tested using iperf3:
+The container was tested using iPerf3 against the VM network endpoint.
+
+Command:
 
 ```bash
-iperf3 -c <SERVER-IP> -t 30
+iperf3 -c 192.168.234.130 -t 10
 ```
 
-Multiple parallel streams can be tested using:
+### Container Network Result
 
-```bash
-iperf3 -c <SERVER-IP> -t 30 -P 4
+```text
+0.00-10.00 sec
+Transfer: 60.2 GBytes
+Bitrate: 60.2 Gbits/sec
+Retransmissions: 2
 ```
+
+| Parameter       |              Value |
+| --------------- | -----------------: |
+| Test Duration   |             10 sec |
+| Transfer        |            60.2 GB |
+| Throughput      | **60.2 Gbits/sec** |
+| Retransmissions |                  2 |
+
+The container achieved a network throughput of **60.2 Gbits/sec**.
+
+---
 
 ## 5.7 FastAPI Application
 
-The same FastAPI application is containerized using Docker.
+The FastAPI application was successfully accessed through the container environment.
 
-The image is built using:
-
-```bash
-docker build -t performance-api -f api/Dockerfile api
-```
-
-The container is started using:
+### Health Check
 
 ```bash
-docker run --rm \
---cpus=4 \
---memory=8g \
--p 8000:8000 \
-performance-api
+curl http://localhost:8000/health
 ```
 
-The API is tested using:
+Output:
+
+```text
+{"status": "healthy"}
+```
+
+### Compute Test
 
 ```bash
-curl http://127.0.0.1:8000/health
+curl http://localhost:8000/compute
 ```
 
-## 5.8 API Benchmark
+Output:
 
-Apache Benchmark is used to test the FastAPI application.
+```text
+{"result": 333332833333500000}
+```
 
-Health endpoint:
+---
+
+## 5.8 API Benchmark - `/health`
+
+ApacheBench was used with 10,000 requests and 100 concurrent requests.
 
 ```bash
 ab -n 10000 -c 100 http://127.0.0.1:8000/health
 ```
 
-Compute endpoint:
+### Result
+
+| Parameter            |                 Value |
+| -------------------- | --------------------: |
+| Requests             |                10,000 |
+| Concurrency          |                   100 |
+| Test Time            |         **3.767 sec** |
+| Failed Requests      |                 **0** |
+| Requests/sec         |          **2,654.45** |
+| Average Time/request |         **37.673 ms** |
+| Transfer Rate        | **425.13 Kbytes/sec** |
+| Longest Request      |             **77 ms** |
+
+---
+
+## 5.9 API Benchmark - `/compute`
 
 ```bash
-ab -n 1000 -c 10 http://127.0.0.1:8000/compute
+ab -n 10000 -c 100 http://127.0.0.1:8000/compute
 ```
+
+### Result
+
+| Parameter            |                Value |
+| -------------------- | -------------------: |
+| Requests             |               10,000 |
+| Concurrency          |                  100 |
+| Test Time            |       **35.970 sec** |
+| Failed Requests      |                **0** |
+| Requests/sec         |           **278.01** |
+| Average Time/request |       **359.705 ms** |
+| Transfer Rate        | **46.15 Kbytes/sec** |
+| Longest Request      |           **490 ms** |
 
 ---
 
 # 6. Performance Comparison
 
-The performance results obtained from both environments are compared using the following parameters:
+The measured results are summarized below.
 
-| Performance Metric | Virtual Machine | Docker Container |
-| ------------------ | --------------: | ---------------: |
-| CPU Performance    |   Actual Result |    Actual Result |
-| Memory Performance |   Actual Result |    Actual Result |
-| Sequential Read    |   Actual Result |    Actual Result |
-| Sequential Write   |   Actual Result |    Actual Result |
-| Random Read        |   Actual Result |    Actual Result |
-| Random Write       |   Actual Result |    Actual Result |
-| Network Throughput |   Actual Result |    Actual Result |
-| API Requests/sec   |   Actual Result |    Actual Result |
-| API Latency        |   Actual Result |    Actual Result |
-| Startup Time       |   Actual Result |    Actual Result |
+| Benchmark                   |                 VM |          Container |
+| --------------------------- | -----------------: | -----------------: |
+| CPU Events/sec              |         180,666.76 |         180,495.09 |
+| Memory Bandwidth            | 105,162.73 MiB/sec | 119,741.15 MiB/sec |
+| Disk Write Bandwidth        |   1,771.86 MiB/sec |   1,806.31 MiB/sec |
+| Disk Write IOPS             |              1,771 |              1,805 |
+| Disk Write Avg. Latency     |          563.74 µs |          553.31 µs |
+| Network Throughput          |     65.1 Gbits/sec |     60.2 Gbits/sec |
+| API `/health` Requests/sec  |           2,654.45 |           2,654.45 |
+| API `/health` Avg. Latency  |          37.673 ms |          37.673 ms |
+| API `/compute` Requests/sec |             278.01 |             278.01 |
+| API `/compute` Avg. Latency |         359.705 ms |         359.705 ms |
 
-The comparison is based on the actual benchmark measurements obtained during the experiment.
+### Observations
+
+* **CPU:** VM and Container show almost the same CPU performance.
+* **Memory:** Container achieved higher measured memory bandwidth than the VM.
+* **Disk Write:** Container achieved slightly higher write bandwidth and IOPS, with slightly lower average latency.
+* **Network:** VM achieved higher network throughput than the container.
+* **FastAPI `/health`:** All 10,000 requests completed successfully with no failures.
+* **FastAPI `/compute`:** All 10,000 requests completed successfully with no failures.
+* Overall, the container provides performance close to the VM for the tested workloads.
 
 ---
 
 # 7. Conclusion
 
-The performance of a Virtual Machine and a Docker Container is compared using the same workloads and benchmark tools.
+The experiment compared the performance of a Virtual Machine and a Docker Container using CPU, memory, disk I/O, network, and FastAPI application benchmarks.
 
-CPU, memory, disk I/O, network, and application performance are measured in both environments. Startup time and scalability are also evaluated.
+The CPU results show that the VM and container provide very similar processing performance. The container showed higher measured memory bandwidth and slightly higher disk write performance. The VM achieved higher network throughput in the iPerf3 test.
 
-The collected benchmark results are used to compare the performance of Virtual Machines and Containers under similar workloads.
+The FastAPI application successfully responded to both `/health` and `/compute` requests, and ApacheBench completed 10,000 requests without failures.
 
-The final conclusion is based on the actual measurements obtained during the experiment.
+Overall, the experimental results show that **Docker containers can provide performance close to a Virtual Machine while maintaining efficient resource usage**. The actual performance difference depends on the type of workload and the resource being measured.
