@@ -564,6 +564,10 @@ The container also provides very fast startup time.
 
 ---
 
+![Result](Screenshots/result.jpeg)
+
+---
+
 # 7. Conclusion
 
 The performance results of the virtual machine and Docker container are compared using CPU, memory, disk I/O, network and application benchmarks.
