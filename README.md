@@ -2,19 +2,19 @@
 
 ## 1. Introduction
 
-This experiment focuses on the performance analysis and comparison of virtual machines and Docker containers under similar workloads.
+This experiment focuses on the performance analysis of a Virtual Machine and a Docker Container running the same workloads.
 
 The experiment uses:
 
-* **VMware Workstation** as the virtualization platform
+* **VMware Workstation** for the Virtual Machine
+* **Docker** for the Container
 * **Ubuntu** as the guest operating system
-* **Docker** as the container platform
-* **Sysbench** for CPU and memory performance benchmarking
-* **fio** for disk I/O performance benchmarking
+* **Sysbench** for CPU and memory benchmarking
+* **fio** for disk I/O benchmarking
 * **iperf3** for network performance benchmarking
 * **FastAPI** for application performance testing
 
-The virtual machine and Docker container are configured with comparable resources and workloads so that their performance can be measured and compared.
+Both environments are configured with comparable resources so that their performance can be measured and compared under similar workloads.
 
 ---
 
@@ -22,65 +22,48 @@ The virtual machine and Docker container are configured with comparable resource
 
 The objectives of this experiment are:
 
-1. To prepare and configure the experimental environment for VM and container performance comparison.
-2. To configure a virtual machine using VMware Workstation.
-3. To configure a Docker container with controlled CPU, memory, disk and network resources.
-4. To verify the CPU, memory, storage and network configurations.
-5. To perform baseline performance measurements.
-6. To measure CPU performance using Sysbench.
-7. To measure memory performance using Sysbench.
-8. To measure disk I/O performance using fio.
-9. To measure network performance using iperf3.
-10. To deploy a FastAPI application for application-level performance testing.
-11. To measure API performance under different workloads.
-12. To measure VM and container startup time.
-13. To study scalability by increasing workload levels.
-14. To automate the execution and collection of benchmark results.
-15. To process and analyze the collected benchmark data.
-16. To perform statistical analysis of the experimental results.
-17. To generate graphs and comparison tables.
-18. To compare the performance of virtual machines and containers using the collected measurements.
-19. To document the complete experiment and publish the results in a GitHub repository.
+1. To create and configure a Virtual Machine and Docker Container.
+2. To run the same workloads in both environments.
+3. To measure CPU, memory, disk, network and application performance.
+4. To compare the performance of the Virtual Machine and Docker Container.
 
 ---
 
 ## 3. Experimental Configuration
 
-| Resource               | Configuration      |
-| ---------------------- | ------------------ |
-| Host Operating System  | Windows            |
-| Hypervisor             | VMware Workstation |
-| Guest Operating System | Ubuntu 24.04 LTS   |
-| Container Platform     | Docker             |
-| CPU                    | 4 vCPU             |
-| Memory                 | 8 GB               |
-| Disk                   | 60 GB              |
-| CPU Benchmark          | Sysbench           |
-| Memory Benchmark       | Sysbench           |
-| Disk Benchmark         | fio                |
-| Network Benchmark      | iperf3             |
-| Application Framework  | FastAPI            |
-| Programming Language   | Python             |
+| Resource                 | Configuration      |
+| ------------------------ | ------------------ |
+| Host Operating System    | Windows            |
+| Virtual Machine Platform | VMware Workstation |
+| Guest Operating System   | Ubuntu             |
+| Container Platform       | Docker             |
+| CPU                      | 4 vCPU             |
+| Memory                   | 8 GB               |
+| Disk                     | 60 GB              |
+| CPU Benchmark            | Sysbench           |
+| Memory Benchmark         | Sysbench           |
+| Disk Benchmark           | fio                |
+| Network Benchmark        | iperf3             |
+| Application              | FastAPI            |
 
----
+## The experiment uses fixed resources and identical workloads for the VM and container comparison. The lab manual recommends keeping the VM resources fixed and applying controlled CPU and memory limits to the container.
 
-# 4. VM Environment
+# 4. Part A - Virtual Machine
 
 ## 4.1 VMware Workstation
 
-VMware Workstation is used to run the Ubuntu virtual machine for the experiment.
+VMware Workstation is used to create the Virtual Machine environment.
 
-The virtual machine is configured with the required CPU, memory, disk and network resources.
+The virtual machine is configured with the following resources:
 
-| Parameter       | Configuration      |
-| --------------- | ------------------ |
-| Hypervisor      | VMware Workstation |
-| Hypervisor Type | Type-2             |
-| Guest OS        | Ubuntu             |
-| CPU             | 4 vCPU             |
-| Memory          | 8 GB               |
-| Disk            | 60 GB              |
-| Network         | NAT / Bridged      |
+| Parameter | Configuration      |
+| --------- | ------------------ |
+| Platform  | VMware Workstation |
+| Guest OS  | Ubuntu             |
+| CPU       | 4 vCPU             |
+| Memory    | 8 GB               |
+| Disk      | 60 GB              |
+| Network   | NAT / Bridged      |
 
 ## 4.2 Ubuntu Verification
 
@@ -108,642 +91,334 @@ Disk information is checked using:
 df -h
 ```
 
-System resource utilization is monitored using:
+System information is checked using:
 
 ```bash
-top
+uname -a
 ```
 
-Network configuration is checked using:
+## 4.3 Benchmark Tools Installation
 
-```bash
-ip addr
-```
-
----
-
-# 5. Docker Environment
-
-## 5.1 Docker
-
-Docker is used as the container platform for the experiment.
-
-Docker installation is verified using:
-
-```bash
-docker --version
-```
-
-Running containers are checked using:
-
-```bash
-docker ps
-```
-
-Docker images are checked using:
-
-```bash
-docker images
-```
-
-## 5.2 Container Configuration
-
-The Docker container is configured with resources comparable to the VM.
-
-| Parameter             | Configuration  |
-| --------------------- | -------------- |
-| Platform              | Docker         |
-| CPU                   | 4 CPUs         |
-| Memory                | 8 GB           |
-| Network               | Docker Network |
-| Operating Environment | Ubuntu Host    |
-
-The same or comparable workloads are executed inside the container for performance comparison.
-
----
-
-# 6. Baseline Measurement
-
-A baseline measurement is performed before the VM and container performance comparison.
-
-The baseline measurement provides a reference for the performance experiments.
-
-The actual baseline results will be recorded below.
-
-| Metric               |       Baseline |
-| -------------------- | -------------: |
-| Total Execution Time | To be recorded |
-| Total Events         | To be recorded |
-| Events per Second    | To be recorded |
-| Average Latency      | To be recorded |
-
-The raw baseline results are stored in:
-
-```text
-results/raw/baseline/
-```
-
----
-
-# 7. CPU Performance
-
-## 7.1 Sysbench Installation
-
-Sysbench is installed using:
+The required benchmark tools are installed using:
 
 ```bash
 sudo apt update
-sudo apt install sysbench -y
+sudo apt install -y sysbench fio iperf3 htop sysstat python3 python3-pip git
 ```
 
-The installation is verified using:
+The installations are verified using:
 
 ```bash
 sysbench --version
-```
-
-## 7.2 CPU Benchmark
-
-The CPU benchmark is executed using:
-
-```bash
-sysbench cpu --cpu-max-prime=20000 run
-```
-
-The same benchmark workload is executed in both the VM and Docker container.
-
-The benchmark measures:
-
-* Total execution time
-* Total events
-* Events per second
-* Minimum latency
-* Average latency
-* Maximum latency
-* Percentile latency
-
-## 7.3 CPU Results
-
-### VM Results
-
-| Metric               |             VM |
-| -------------------- | -------------: |
-| Total Execution Time | To be recorded |
-| Total Events         | To be recorded |
-| Events per Second    | To be recorded |
-| Minimum Latency      | To be recorded |
-| Average Latency      | To be recorded |
-| Maximum Latency      | To be recorded |
-| 95th Percentile      | To be recorded |
-
-### Docker Container Results
-
-| Metric               | Docker Container |
-| -------------------- | ---------------: |
-| Total Execution Time |   To be recorded |
-| Total Events         |   To be recorded |
-| Events per Second    |   To be recorded |
-| Minimum Latency      |   To be recorded |
-| Average Latency      |   To be recorded |
-| Maximum Latency      |   To be recorded |
-| 95th Percentile      |   To be recorded |
-
-The raw CPU results are stored in:
-
-```text
-results/raw/cpu/
-```
-
----
-
-# 8. Memory Performance
-
-## 8.1 Memory Benchmark
-
-Memory performance is measured using Sysbench.
-
-The memory workload uses:
-
-* Block size: 1 MB
-* Total memory operation: 10 GB
-* Threads: 4
-
-The same workload is used for the VM and Docker container.
-
-## 8.2 Memory Results
-
-### VM Results
-
-| Metric               |             VM |
-| -------------------- | -------------: |
-| Total Execution Time | To be recorded |
-| Total Operations     | To be recorded |
-| Throughput           | To be recorded |
-| Average Latency      | To be recorded |
-
-### Docker Container Results
-
-| Metric               | Docker Container |
-| -------------------- | ---------------: |
-| Total Execution Time |   To be recorded |
-| Total Operations     |   To be recorded |
-| Throughput           |   To be recorded |
-| Average Latency      |   To be recorded |
-
-The raw memory results are stored in:
-
-```text
-results/raw/memory/
-```
-
----
-
-# 9. Disk I/O Performance
-
-## 9.1 fio Installation
-
-The disk benchmarking tool is installed using:
-
-```bash
-sudo apt update
-sudo apt install fio -y
-```
-
-The installation is verified using:
-
-```bash
 fio --version
-```
-
-## 9.2 Disk Benchmark
-
-Disk performance is measured using fio.
-
-The experiment includes:
-
-* Sequential write
-* Sequential read
-* Random write
-* Random read
-
-The benchmark measures:
-
-* Throughput
-* IOPS
-* Latency
-
-## 9.3 Disk Results
-
-### VM Results
-
-| Test             |     Throughput |           IOPS | Average Latency |
-| ---------------- | -------------: | -------------: | --------------: |
-| Sequential Write | To be recorded | To be recorded |  To be recorded |
-| Sequential Read  | To be recorded | To be recorded |  To be recorded |
-| Random Write     | To be recorded | To be recorded |  To be recorded |
-| Random Read      | To be recorded | To be recorded |  To be recorded |
-
-### Docker Container Results
-
-| Test             |     Throughput |           IOPS | Average Latency |
-| ---------------- | -------------: | -------------: | --------------: |
-| Sequential Write | To be recorded | To be recorded |  To be recorded |
-| Sequential Read  | To be recorded | To be recorded |  To be recorded |
-| Random Write     | To be recorded | To be recorded |  To be recorded |
-| Random Read      | To be recorded | To be recorded |  To be recorded |
-
-The raw disk results are stored in:
-
-```text
-results/raw/disk/
-```
-
----
-
-# 10. Network Performance
-
-## 10.1 iperf3 Installation
-
-The network benchmarking tool is installed using:
-
-```bash
-sudo apt update
-sudo apt install iperf3 -y
-```
-
-The installation is verified using:
-
-```bash
 iperf3 --version
+python3 --version
+git --version
 ```
 
-## 10.2 Network Benchmark
+## 4.4 CPU Benchmark
 
-The network performance is measured using an iperf3 client-server arrangement.
+CPU performance is measured using Sysbench:
 
-The server is started using:
+```bash
+sysbench cpu --cpu-max-prime=20000 --threads=4 --time=30 run
+```
+
+The CPU benchmark is also performed with different thread counts to study scalability.
+
+## 4.5 Memory Benchmark
+
+Memory performance is measured using:
+
+```bash
+sysbench memory \
+--memory-block-size=1M \
+--memory-total-size=10G \
+--threads=4 \
+run
+```
+
+## 4.6 Disk Benchmark
+
+Disk I/O performance is measured using fio.
+
+### Sequential Write
+
+```bash
+fio --name=seq-write \
+--filename=~/fio-test/testfile \
+--size=2G \
+--bs=1M \
+--rw=write \
+--direct=1 \
+--iodepth=16 \
+--runtime=30 \
+--time_based
+```
+
+### Sequential Read
+
+```bash
+fio --name=seq-read \
+--filename=~/fio-test/testfile \
+--size=2G \
+--bs=1M \
+--rw=read \
+--direct=1 \
+--iodepth=16 \
+--runtime=30 \
+--time_based
+```
+
+### Random Read
+
+```bash
+fio --name=random-read \
+--filename=~/fio-test/testfile \
+--size=2G \
+--bs=4k \
+--rw=randread \
+--direct=1 \
+--iodepth=16 \
+--runtime=30 \
+--time_based
+```
+
+### Random Write
+
+```bash
+fio --name=random-write \
+--filename=~/fio-test/testfile \
+--size=2G \
+--bs=4k \
+--rw=randwrite \
+--direct=1 \
+--iodepth=16 \
+--runtime=30 \
+--time_based
+```
+
+## 4.7 Network Benchmark
+
+Network performance is measured using iperf3.
+
+Server:
 
 ```bash
 iperf3 -s
 ```
 
-The client is run using:
+Client:
 
 ```bash
-iperf3 -c <server-ip> -t 10
+iperf3 -c <SERVER-IP> -t 30
 ```
 
-The experiment records:
+Multiple streams can be tested using:
 
-* Network throughput
-* Retransmissions
-
-## 10.3 Network Results
-
-### VM Results
-
-| Run   |     Throughput | Retransmissions |
-| ----- | -------------: | --------------: |
-| Run 1 | To be recorded |  To be recorded |
-| Run 2 | To be recorded |  To be recorded |
-| Run 3 | To be recorded |  To be recorded |
-
-### Docker Container Results
-
-| Run   |     Throughput | Retransmissions |
-| ----- | -------------: | --------------: |
-| Run 1 | To be recorded |  To be recorded |
-| Run 2 | To be recorded |  To be recorded |
-| Run 3 | To be recorded |  To be recorded |
-
-The raw network results are stored in:
-
-```text
-results/raw/network/
+```bash
+iperf3 -c <SERVER-IP> -t 30 -P 4
 ```
 
----
+## 4.8 FastAPI Application
 
-# 11. FastAPI Application Performance
+A FastAPI application is used to test application performance.
 
-## 11.1 FastAPI Application
+The application provides:
 
-A FastAPI application is created to measure application-level performance.
+* `/health`
+* `/compute`
+* `/memory`
 
-The application provides the following endpoints:
-
-```text
-/health
-/compute
-/memory
-```
-
-The FastAPI application is started using:
+The application is started using:
 
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000
 ```
 
-## 11.2 API Workloads
+The health endpoint is tested using:
 
-The following API endpoints are tested:
-
-### Health Endpoint
-
-```text
-/health
+```bash
+curl http://localhost:8000/health
 ```
 
-This endpoint is used to measure basic API response performance.
-
-### CPU Workload
+Expected output:
 
 ```text
-/compute
-```
-
-This endpoint performs a CPU-intensive operation.
-
-### Memory Workload
-
-```text
-/memory
-```
-
-This endpoint performs a memory-intensive operation.
-
-The same application and workloads are used for the VM and Docker container.
-
-## 11.3 API Performance Results
-
-### VM Results
-
-| Endpoint |   Requests/sec | Average Latency |         Errors |
-| -------- | -------------: | --------------: | -------------: |
-| /health  | To be recorded |  To be recorded | To be recorded |
-| /compute | To be recorded |  To be recorded | To be recorded |
-| /memory  | To be recorded |  To be recorded | To be recorded |
-
-### Docker Container Results
-
-| Endpoint |   Requests/sec | Average Latency |         Errors |
-| -------- | -------------: | --------------: | -------------: |
-| /health  | To be recorded |  To be recorded | To be recorded |
-| /compute | To be recorded |  To be recorded | To be recorded |
-| /memory  | To be recorded |  To be recorded | To be recorded |
-
----
-
-# 12. Startup Time
-
-Startup performance is measured for both the virtual machine and Docker container.
-
-The experiment measures:
-
-* VM startup time
-* Container startup time
-* Application startup time
-* Application ready time
-
-## 12.1 Startup Results
-
-| Measurement              |             VM | Docker Container |
-| ------------------------ | -------------: | ---------------: |
-| Environment Startup Time | To be recorded |   To be recorded |
-| Application Startup Time | To be recorded |   To be recorded |
-| Application Ready Time   | To be recorded |   To be recorded |
-
-The raw startup results are stored in:
-
-```text
-results/raw/startup/
+{"status":"healthy"}
 ```
 
 ---
 
-# 13. Scalability
+# 5. Part B - Docker Container
 
-Scalability is tested by increasing workload levels and observing the performance of the VM and Docker container.
+## 5.1 Docker Container
 
-## 13.1 CPU Scalability
+Docker is used to create the Container environment for the second part of the experiment.
 
-CPU performance is tested using increasing thread counts.
+The container is configured with comparable resources.
 
-Example:
+| Parameter    | Configuration               |
+| ------------ | --------------------------- |
+| Platform     | Docker                      |
+| Base Image   | Ubuntu 24.04                |
+| CPU Limit    | 4 CPUs                      |
+| Memory Limit | 8 GB                        |
+| Storage      | Benchmark directory         |
+| Network      | Fixed network configuration |
 
-```text
-1 → 2 → 4 → 8 threads
+## 5.2 Docker Image
+
+The benchmark Docker image is created using a Dockerfile containing the required benchmarking tools.
+
+The image is built using:
+
+```bash
+docker build -t vm-container-benchmark -f docker/Dockerfile .
 ```
 
-The performance is recorded for each workload level.
+The image is verified using:
 
-## 13.2 API Scalability
-
-API performance is tested using increasing numbers of clients and connections.
-
-The measurements include:
-
-* Requests per second
-* Latency
-* Errors
-* Throughput
-
-## 13.3 Scalability Results
-
-| Workload Level |             VM | Docker Container |
-| -------------- | -------------: | ---------------: |
-| Level 1        | To be recorded |   To be recorded |
-| Level 2        | To be recorded |   To be recorded |
-| Level 3        | To be recorded |   To be recorded |
-| Level 4        | To be recorded |   To be recorded |
-
-The raw scalability results are stored in:
-
-```text
-results/raw/scalability/
+```bash
+docker images
 ```
 
----
+## 5.3 CPU Benchmark
 
-# 14. Automated Benchmark Execution
+The same CPU benchmark used in the VM is executed inside the container:
 
-Benchmark scripts are used to automate the execution of experiments and collection of results.
-
-The scripts are used to:
-
-* Execute repeated benchmark runs
-* Maintain consistent benchmark parameters
-* Save raw results
-* Reduce manual errors
-* Organize benchmark outputs
-
-The scripts are stored in:
-
-```text
-scripts/
+```bash
+docker run --rm \
+--cpus=4 \
+--memory=8g \
+vm-container-benchmark \
+sysbench cpu \
+--cpu-max-prime=20000 \
+--threads=4 \
+--time=30 \
+run
 ```
 
----
+## 5.4 Memory Benchmark
 
-# 15. Result Processing
+The same memory workload is executed inside the container:
 
-The collected benchmark results are processed using Python.
-
-Pandas is used for reading and processing the collected CSV data.
-
-Matplotlib is used to generate graphs from the processed results.
-
-Processed results are stored in:
-
-```text
-results/processed/
+```bash
+docker run --rm \
+vm-container-benchmark \
+sysbench memory \
+--memory-block-size=1M \
+--memory-total-size=10G \
+--threads=4 \
+run
 ```
 
----
+## 5.5 Disk Benchmark
 
-# 16. Statistical Analysis
+The benchmark directory is mounted into the container:
 
-The collected benchmark results are analyzed using repeated measurements.
+```bash
+docker run --rm \
+-v ~/fio-test:/fio-test \
+vm-container-benchmark \
+fio --name=seq-write \
+--filename=/fio-test/testfile \
+--size=2G \
+--bs=1M \
+--rw=write \
+--direct=1 \
+--iodepth=16 \
+--runtime=30 \
+--time_based
+```
 
-The analysis includes:
+The same sequential and random disk tests are performed inside the container.
 
-* Mean
-* Minimum
-* Maximum
-* Standard deviation
-* Variation between runs
+## 5.6 Network Benchmark
 
-The statistical analysis is performed using the actual experimental measurements.
+Network performance is tested using iperf3:
 
----
+```bash
+iperf3 -c <SERVER-IP> -t 30
+```
 
-# 17. Performance Comparison
+Multiple parallel streams can be tested using:
 
-The final performance comparison includes all completed experiments.
+```bash
+iperf3 -c <SERVER-IP> -t 30 -P 4
+```
 
-| Performance Metric      |             VM | Docker Container |
-| ----------------------- | -------------: | ---------------: |
-| CPU Events per Second   | To be recorded |   To be recorded |
-| CPU Execution Time      | To be recorded |   To be recorded |
-| CPU Average Latency     | To be recorded |   To be recorded |
-| Memory Throughput       | To be recorded |   To be recorded |
-| Disk Read Throughput    | To be recorded |   To be recorded |
-| Disk Write Throughput   | To be recorded |   To be recorded |
-| Disk Read IOPS          | To be recorded |   To be recorded |
-| Disk Write IOPS         | To be recorded |   To be recorded |
-| Disk Latency            | To be recorded |   To be recorded |
-| Network Throughput      | To be recorded |   To be recorded |
-| Network Retransmissions | To be recorded |   To be recorded |
-| API Requests/sec        | To be recorded |   To be recorded |
-| API Average Latency     | To be recorded |   To be recorded |
-| Startup Time            | To be recorded |   To be recorded |
-| Scalability Performance | To be recorded |   To be recorded |
+## 5.7 FastAPI Application
 
-The comparison is based on the actual benchmark measurements obtained during the experiments.
+The same FastAPI application is containerized using Docker.
 
----
+The image is built using:
 
-# 18. Graphs and Visualization
+```bash
+docker build -t performance-api -f api/Dockerfile api
+```
 
-Graphs are generated from the processed experimental results.
+The container is started using:
 
-The planned graphs include:
+```bash
+docker run --rm \
+--cpus=4 \
+--memory=8g \
+-p 8000:8000 \
+performance-api
+```
 
-* CPU performance comparison
-* Memory performance comparison
-* Disk throughput comparison
-* Disk IOPS comparison
-* Disk latency comparison
-* Network throughput comparison
-* API performance comparison
-* Startup-time comparison
-* CPU scalability comparison
-* API scalability comparison
+The API is tested using:
 
-The graphs are stored in:
+```bash
+curl http://127.0.0.1:8000/health
+```
 
-```text
-results/figures/
+## 5.8 API Benchmark
+
+Apache Benchmark is used to test the FastAPI application.
+
+Health endpoint:
+
+```bash
+ab -n 10000 -c 100 http://127.0.0.1:8000/health
+```
+
+Compute endpoint:
+
+```bash
+ab -n 1000 -c 10 http://127.0.0.1:8000/compute
 ```
 
 ---
 
-# 19. Current Progress
+# 6. Performance Comparison
 
-| Experiment                    | Status      |
-| ----------------------------- | ----------- |
-| VM setup                      | Completed   |
-| Docker setup                  | Completed   |
-| Baseline measurement          | Completed   |
-| CPU benchmark                 | Completed   |
-| Memory benchmark              | Completed   |
-| Disk I/O benchmark            | Completed   |
-| Network benchmark             | Completed   |
-| FastAPI application           | Pending     |
-| API performance benchmark     | Pending     |
-| Startup-time measurement      | Pending     |
-| Scalability testing           | Pending     |
-| Automated benchmark execution | Pending     |
-| Result processing             | Pending     |
-| Statistical analysis          | Pending     |
-| Graph generation              | Pending     |
-| Final performance comparison  | Pending     |
-| Documentation                 | In Progress |
+The performance results obtained from both environments are compared using the following parameters:
+
+| Performance Metric | Virtual Machine | Docker Container |
+| ------------------ | --------------: | ---------------: |
+| CPU Performance    |   Actual Result |    Actual Result |
+| Memory Performance |   Actual Result |    Actual Result |
+| Sequential Read    |   Actual Result |    Actual Result |
+| Sequential Write   |   Actual Result |    Actual Result |
+| Random Read        |   Actual Result |    Actual Result |
+| Random Write       |   Actual Result |    Actual Result |
+| Network Throughput |   Actual Result |    Actual Result |
+| API Requests/sec   |   Actual Result |    Actual Result |
+| API Latency        |   Actual Result |    Actual Result |
+| Startup Time       |   Actual Result |    Actual Result |
+
+The comparison is based on the actual benchmark measurements obtained during the experiment.
 
 ---
 
-# 20. Project Structure
+# 7. Conclusion
 
-```text
-vm-vs-container-performance/
-│
-├── README.md
-│
-├── docs/
-│   ├── cpu-info.txt
-│   ├── memory-info.txt
-│   ├── storage-info.txt
-│   ├── kernel-info.txt
-│   └── vm-configuration.txt
-│
-├── api/
-│   └── main.py
-│
-├── docker/
-│   └── Dockerfile
-│
-├── scripts/
-│
-├── workloads/
-│
-└── results/
-    │
-    ├── raw/
-    │   ├── baseline/
-    │   ├── cpu/
-    │   ├── memory/
-    │   ├── disk/
-    │   ├── network/
-    │   ├── startup/
-    │   └── scalability/
-    │
-    ├── processed/
-    │
-    └── figures/
-```
+The performance of a Virtual Machine and a Docker Container is compared using the same workloads and benchmark tools.
 
----
+CPU, memory, disk I/O, network, and application performance are measured in both environments. Startup time and scalability are also evaluated.
 
-# 21. Conclusion
+The collected benchmark results are used to compare the performance of Virtual Machines and Containers under similar workloads.
 
-This experiment focuses on the performance analysis and comparison of virtual machines and Docker containers using controlled and comparable workloads.
-
-The experiment includes CPU, memory, disk I/O, network, application performance, startup time and scalability measurements.
-
-Sysbench is used for CPU and memory benchmarking, fio is used for disk I/O benchmarking, iperf3 is used for network benchmarking, and FastAPI is used for application-level performance testing.
-
-The collected benchmark results are processed and statistically analyzed to compare the measured performance of the VM and Docker container.
-
-Graphs and comparison tables are generated from the experimental results.
-
-The final conclusion will be based on the actual measurements obtained after completing all experiments.
+The final conclusion is based on the actual measurements obtained during the experiment.
