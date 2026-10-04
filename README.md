@@ -530,6 +530,16 @@ These commands are used to analyze API scalability as the number of concurrent c
 
 ---
 
+| API Scalability 1 | API Scalability 2 |
+|---|---|
+| ![API Scalability 1](Screenshots/API_scalability_1.jpeg) | ![API Scalability 2](Screenshots/API_scalability_2.jpeg) |
+
+| API Scalability 3 | API Scalability 4 |
+|---|---|
+| ![API Scalability 3](Screenshots/API_scalability_3.jpeg) | ![API Scalability 4](Screenshots/API_scalability_4.jpeg) |
+
+---
+
 # 6. Performance Comparison
 
 The benchmark results obtained from both environments are compared using the following parameters:
