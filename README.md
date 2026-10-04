@@ -239,10 +239,10 @@ This command is used to measure network throughput between the VM and the iperf3
 
 ---
 
-![VM 1 Thread](vm_th_1.png)
-![VM 2 Threads](vm_th_2.png)
-![VM 4 Threads](vm_th_4.png)
-![VM 8 Threads](vm_th_8.png)
+![VM Thread 1](Screenshots/vm%20th%201.jpeg)
+![VM Thread 2](Screenshots/vm%20th%202.jpeg)
+![VM Thread 4](Screenshots/vm%20th%204.jpeg)
+![VM Thread 8](Screenshots/vm%20th%208.jpeg)
 
 ---
 
