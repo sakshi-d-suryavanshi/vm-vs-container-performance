@@ -324,6 +324,15 @@ sysbench cpu --cpu-max-prime=20000 --threads=4 --time=30 run
 ```bash
 sysbench cpu --cpu-max-prime=20000 --threads=8 --time=30 run
 ```
+| Container Thread 1 | Container Thread 2 |
+|---|---|
+| ![Container Thread 1](Screenshots/container_th_1.jpeg) | ![Container Thread 2](Screenshots/container_th_2.jpeg) |
+
+| Container Thread 4 | Container Thread 8 |
+|---|---|
+| ![Container Thread 4](Screenshots/container_th_4.jpeg) | ![Container Thread 8](Screenshots/container_th_8.jpeg) |
+
+----
 
 These commands are used to measure container CPU performance at different thread levels.
 
