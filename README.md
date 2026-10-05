@@ -554,7 +554,7 @@ The benchmark results obtained from both environments are compared using the fol
 | Disk I/O           |       1771 MiB/sec |       1806 MiB/sec |
 | Disk IOPS          |               1771 |               1805 |
 | Network            |     65.1 Gbits/sec |     60.2 Gbits/sec |
-| Startup Time       |                  — |    0.2855–0.3585 s |
+| Startup Time       |                 18.2 sec|    0.2855 s |
 
 The CPU benchmark shows that both environments provide similar CPU performance.
 
